@@ -12,7 +12,7 @@ namespace neu {
         entity_(std::move(entity)), weights_(std::move(weights))
     {}
 
-    void Neu::setNeu(size_t ec, const fs::path& ptd, const std::string& mn) {
+    /*void Neu::setNeu(size_t ec, const fs::path& ptd, const std::string& mn) {
         if (!fs::exists(ptd) || !fs::is_directory(ptd)) {
             throw std::invalid_argument("Provided path is incorrect");
         }
@@ -22,7 +22,7 @@ namespace neu {
         train_ = ptd / "train";
         val_ = ptd / "val";
         test_ = ptd / "test";
-    }
+    }*/
 
     void Neu::setNeu( size_t ec, const fs::path& train
                     , const fs::path& val
@@ -43,15 +43,42 @@ namespace neu {
         model_name_ = mn;
     }
 
-    int Neu::trainNeu(int info) {
+    int Neu::trainNeu() {
+        try {
+            py::module train_module = py::module::import("neu");
+            py::object train_model = train_module.attr("train_model");
+            model_path_ = train_model(train_.string(), model_name_, epoch_count_).cast<fs::path>();
 
+            //std::cout << "Model trained and saved at: " << model_path << std::endl;
+            return 0;
+        } catch (const py::error_already_set& e) {
+            std::cerr << "Python error: " << e.what() << std::endl;
+            return -1;
+        } catch (const std::exception& ex) {
+            std::cerr << ex.what() << std::endl;
+            return 59;
+        } catch (...) {
+            return -100;
+        }
     }
 
-    int Neu::trainNeu(int info, fs::path img) {
+    std::string Neu::checkNeu(const fs::path& path_to_pic) {
+        try {
+            py::module classify_module = py::module::import("neu");
+            py::object classify_image = classify_module.attr("classify_image");
+            py::object result = classify_image(model_path_.string(), path_to_pic.string());
 
+            return py::str(result);
+        } catch (const py::error_already_set& e) {
+            return "Python error: " + static_cast<std::string>(e.what());
+        }
     }
 
-    int Neu::examNeu(int info, fs::path img) {
+//    int Neu::trainNeu(int info, const cv::Mat& img) {
+//
+//    }
+
+    /*int Neu::examNeu(int info, const fs::path& img) {
         int res = 0;
         if (info) {
             // ... основная часть
@@ -65,9 +92,9 @@ namespace neu {
         std::cout << "Neu: info - " << info << ", image - " << img << std::endl;
     
         return 0;
-    }
+    }*/
 
-    void saveImageToDirectory(const cv::Mat& image, const fs::path& directory, const std::string& filename) {
+    /*void saveImageToDirectory(const cv::Mat& image, const fs::path& directory, const std::string& filename) {
         if (!fs::exists(directory)) {
             throw std::invalid_argument("Directory does not exist");
         }
@@ -80,6 +107,6 @@ namespace neu {
             std::cerr << "Failed to save the image at: " << filePath << std::endl;
         }
 
-    }
+    }*/
 
 } // namespace neu

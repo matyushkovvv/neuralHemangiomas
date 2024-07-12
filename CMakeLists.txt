@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.14)
 project(
         neuHem
         DESCRIPTION "neural detection of hemangiomas on a child's body"
@@ -7,8 +7,11 @@ project(
 
 set(CMAKE_CXX_STANDARD 20)
 
-find_package(pybind11 CONFIG REQUIRED)
-find_package(OpenCV REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
+find_package(Python COMPONENTS Interpreter Development)
+find_package(pybind11 CONFIG)
+
+#find_package(OpenCV REQUIRED)
+#include_directories(${OpenCV_INCLUDE_DIRS})
 
 add_subdirectory(lib)
+add_subdirectory(test)

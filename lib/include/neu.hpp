@@ -1,17 +1,23 @@
+#ifndef NEU_HPP
+#define NEU_HPP
+
 #include <iostream>
 #include <string>
 #include <filesystem>
-#include <opencv2/opencv.hpp>
+#include <pybind11/pybind11.h>
+#include <stdexcept>
+//#include <opencv2/opencv.hpp>
 
 namespace neu {
 
     namespace fs = std::filesystem;
+    namespace py = pybind11;
 
-    void saveImageToDirectory(const cv::Mat& image, const fs::path& directory, const std::string& filename);
+//    void saveImageToDirectory(const cv::Mat& image, const fs::path& directory, const std::string& filename);
 
     class Neu {
         private:
-            fs::path train_, val_, test_;
+            fs::path train_, val_, test_, model_path_;
             std::string model_name_;
             size_t epoch_count_;
             int status_{0};
@@ -41,7 +47,7 @@ namespace neu {
              * @param ec epoch count
              * @param ptd path to the whole dataset
              */
-            void setNeu(size_t ec, const fs::path& ptd, const std::string& mn = "yolov8n-cls.pt");
+            //void setNeu(size_t ec, const fs::path& ptd, const std::string& mn = "yolov8n-cls.pt");
 
             /**
              * @brief set paths for neural network to training dataset and etc
@@ -61,8 +67,10 @@ namespace neu {
              * @param img
              * @return
              */
-            int trainNeu(int info, fs::path img); // обучение, info - например 0 - нет, 1- да, img - имя файла, либо каталог с файлами, либо...
-            int trainNeu(int info, const cv::Mat& img);
+            int trainNeu(); // обучение, info - например 0 - нет, 1- да, img - имя файла, либо каталог с файлами, либо...
+//            int trainNeu(int info, const cv::Mat& img);
+
+        std::string checkNeu(const fs::path& path_to_pic);
 
             /**
              * @brief
@@ -70,7 +78,7 @@ namespace neu {
              * @param img
              * @return
              */
-            int examNeu(int info, std::string img); // проверка, info - не придумал зачем ))), img - имя файла, либо...
+//            int examNeu(int info, const fs::path& img); // проверка, info - не придумал зачем ))), img - имя файла, либо...
 
             /**
              * @brief destructor
@@ -79,3 +87,5 @@ namespace neu {
     };
     
 } // namespace neu
+
+#endif
