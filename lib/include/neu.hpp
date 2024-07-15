@@ -2,10 +2,14 @@
 #define NEU_HPP
 
 #include <iostream>
+#include <cstdlib>
 #include <string>
 #include <filesystem>
 #include <pybind11/pybind11.h>
+#include <pybind11/embed.h>
+#include <opencv2/opencv.hpp>
 #include <stdexcept>
+
 //#include <opencv2/opencv.hpp>
 
 namespace neu {
@@ -21,7 +25,17 @@ namespace neu {
             std::string model_name_;
             size_t epoch_count_;
             int status_{0};
-    
+            py::scoped_interpreter guard_;
+//            fs::path pyhome_;
+
+            /**
+             * @brief default constructor
+             */
+            Neu();
+
+            Neu(const Neu&) = delete;
+            Neu& operator=(const Neu&) = delete;
+
             struct Net { // структура, указывающая на сеть, например, вид и имя файла xml или что там может быть
                 // int kind;
                 //std::string name;
@@ -37,10 +51,11 @@ namespace neu {
 //            Net net();
 
         public:
-           /**
-            * @brief default constructor
-            */
-            Neu();
+            /**
+             * @brief Get the singleton instance of Neu
+             * @return Reference to the singleton instance
+             */
+            static Neu& getInstance();
 
             /**
              * @brief set path for neural network to dataset
@@ -67,10 +82,10 @@ namespace neu {
              * @param img
              * @return
              */
-            int trainNeu(); // обучение, info - например 0 - нет, 1- да, img - имя файла, либо каталог с файлами, либо...
+            int trainNeu(int info, const fs::path& path_to_neunet_module); // обучение, info - например 0 - нет, 1- да, img - имя файла, либо каталог с файлами, либо...
 //            int trainNeu(int info, const cv::Mat& img);
 
-        std::string checkNeu(const fs::path& path_to_pic);
+        std::string checkNeu(const fs::path& path_to_pic, const fs::path& path_to_neunet_module);
 
             /**
              * @brief

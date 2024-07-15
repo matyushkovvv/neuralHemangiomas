@@ -1,7 +1,6 @@
 from ultralytics import YOLO
 import cv2
 
-
 def train_model(data_path, model_name='yolov8n-cls.pt', epochs=10):
     model = YOLO(model_name)
 
